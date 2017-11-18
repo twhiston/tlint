@@ -57,8 +57,15 @@ var RootCmd = &cobra.Command{
 		}
 
 		//shellcheck
-		//TODO - what about other files without an extension, as in s2i?
 		files, err = globExt(dir, ".sh")
+		checkError(err)
+		for _, v := range files {
+			runcmd("shellcheck", v)
+		}
+
+		//shellcheck every file in a bin directory in the image, as these are usually shell scripts
+		//Could be better!
+		files, err = getDirContents(dir, "bin")
 		checkError(err)
 		for _, v := range files {
 			runcmd("shellcheck", v)
@@ -94,7 +101,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tlint.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tlint.yml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -119,6 +126,7 @@ func initConfig() {
 		viper.SetConfigName(".tlint")
 	}
 
+	viper.SetEnvPrefix("TL_")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

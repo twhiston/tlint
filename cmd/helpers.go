@@ -52,3 +52,24 @@ func glob(dir string, name string) ([]string, error) {
 
 	return files, err
 }
+
+func getDirContents(dir string, name string) ([]string, error) {
+
+	var files []string
+	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+		if filepath.Base(path) == name {
+			err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
+				if !f.IsDir() {
+					files = append(files, path)
+				}
+				return nil
+			})
+			if err != nil {
+				log.Panic(err)
+			}
+		}
+		return nil
+	})
+
+	return files, err
+}
