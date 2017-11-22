@@ -1,0 +1,17 @@
+status:
+  imports: true
+  fmt: true
+  gometalinter: true
+  hadolint: true
+  shellcheck: true
+  shellcheck_bin: true
+  checkmake: true
+
+hadolint:
+  ignore:
+    - DL3007
+
+shellcheck:
+  ignore:
+    - SC2034
+    - SC1066
